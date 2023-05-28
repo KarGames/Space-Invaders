@@ -46,13 +46,15 @@ move = ""
 fire = False
 difficulty = 150
 bullets = []
+maxBullets = 3
 aliens = []
+maxAliens = 4
 
 pWidth, pHeight = 50, 50
 bWidth, bHeight = 10, 10
 aWidth, aHeight = 40, 40
 
-player = Ship(screen.get_width()/2 - pWidth/2, screen.get_height() - pHeight-10, 3)
+player = Ship(screen.get_width()/2 - pWidth/2, screen.get_height() - pHeight-10, 5)
 
 def handleMovement(move):
     speed = 5
@@ -69,7 +71,8 @@ def handleBoundaries():
 
 def spawnAlien():
     x = random.randrange(0 + aWidth, screen.get_width() - aWidth)
-    alien = Alien(x, 0, 5)
+    y = random.randrange(-200, 0)
+    alien = Alien(x, y, 2.5)
     
     aliens.append(alien)
     
@@ -79,7 +82,7 @@ def checkCollision():
             if pygame.Rect.colliderect(pygame.Rect(bullet.posX, bullet.posY, bWidth, bHeight), pygame.Rect(alien.posX, alien.posY, aWidth, aHeight)):
                 bullets.remove(bullet)
                 aliens.remove(alien)
-    
+
 def loss():
     if player.lives <= 0:
         return True
@@ -97,7 +100,7 @@ while running:
                 move = "left"
             if event.key == pygame.K_d:
                 move = "right"
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_SPACE and len(bullets) < maxBullets:
                 bullets.append(Bullet(player.posX + pWidth/2, player.posY, 10))
             
         if event.type == pygame.KEYUP:
@@ -124,7 +127,7 @@ while running:
     handleBoundaries()
     handleMovement(move)
     
-    if random.randrange(0, difficulty) == 1:
+    if len(aliens) < maxAliens:
         spawnAlien()
     
     checkCollision()
